@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: 'Space Mono', monospace;
+        background-color: #121212;
+        color: #E0E0E0;
+        margin: 0;
+        padding: 15px;
+      }
+      h2 { color: #00BFA5; font-size: 1.2rem; }
+      
+      .pulse-dot {
+        height: 10px; width: 10px;
+        background-color: #00BFA5;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 191, 165, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 191, 165, 0); }
+      }
+      
+      .card {
+        background: #1e1e1e;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      }
+      
+      .btn {
+        background-color: #00BFA5;
+        color: #121212;
+        border: none;
+        padding: 10px 15px;
+        font-family: inherit;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 4px;
+        width: 100%;
+        margin-top: 10px;
+      }
+      
+      .btn:hover { background-color: #00E6C3; }
+      
+      .bar-container { background: #333; margin-top: 5px; border-radius: 4px; height: 10px; }
+      .bar-fill { height: 10px; border-radius: 4px; background: #00BFA5; width: 0%; transition: width 1s; }
+      
+      .alert { border-left: 3px solid #FFC7CE; padding-left: 10px; margin: 10px 0; font-size: 0.9em; }
+    </style>
+  </head>
+  <body>
+    <h2><span class="pulse-dot"></span> System status</h2>
+    
+    <div class="card">
+      <div style="text-align:center;">
+        <svg width="100" height="100" viewBox="0 0 36 36">
+          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#333" stroke-width="3" />
+          <path id="donut-fill" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#00BFA5" stroke-width="3" stroke-dasharray="80, 100" />
+        </svg>
+        <div style="margin-top:-60px; font-size:1.5em; font-weight:bold; color:#00BFA5;" id="comp-pct">80%</div>
+      </div>
+    </div>
+    
+    <div class="card" id="alerts-container">
+      <h3>Active Alerts</h3>
+      <!-- Alerts injected here -->
+      <div class="alert">Loading...</div>
+    </div>
+
+    <button class="btn" onclick="refreshData()">Refresh Dashboard</button>
+
+    <script>
+      function refreshData() {
+        document.getElementById('alerts-container').innerHTML = '<h3>Active Alerts</h3><div class="alert">Refreshing...</div>';
+        google.script.run.withSuccessHandler(updateUI).getSidebarData();
+      }
+      
+      function updateUI(data) {
+        // mock logic
+        let alertsHtml = '<h3>Active Alerts</h3>';
+        data.alerts.forEach(a => { alertsHtml += `<div class="alert">${a}</div>`; });
+        document.getElementById('alerts-container').innerHTML = alertsHtml;
+      }
+      
+      // Init
+      refreshData();
+    </script>
+  </body>
+</html>

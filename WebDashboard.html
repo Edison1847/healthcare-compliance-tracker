@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Healthcare Compliance Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── TOKENS ── */
+        :root {
+            --teal: #00BFA5;
+            --teal-dim: #00897B;
+            --bg: #080D14;
+            --bg2: #0D1520;
+            --card: #111D2E;
+            --border: #1E3050;
+            --text: #C8D8EC;
+            --dim: #4A6080;
+            --bright: #EEF4FF;
+            --red: #FF5370;
+            --yellow: #FFCB6B;
+            --green: #2ECC71;
+            --orange: #FF8C42;
+            --mono: 'Space Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(ellipse at 20% 10%, rgba(0, 191, 165, .07) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(130, 170, 255, .06) 0%, transparent 50%),
+                linear-gradient(rgba(0, 191, 165, .018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 191, 165, .018) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+        }
+
+        /* ── LOADING ── */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity .5s;
+        }
+
+        #overlay.fade {
+            opacity: 0;
+            pointer-events: none
+        }
+
+        .sp {
+            width: 44px;
+            height: 44px;
+            border: 3px solid var(--border);
+            border-top-color: var(--teal);
+            border-radius: 50%;
+            animation: spin .75s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .ld-txt {
+            font-family: var(--mono);
+            font-size: .8rem;
+            color: var(--dim);
+            letter-spacing: .2em
+        }
+
+        .ld-sub {
+            font-size: .65rem;
+            color: #2a3a50;
+            font-family: var(--mono)
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, rgba(12, 22, 37, .97), rgba(8, 16, 28, .97));
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .h-left {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        /* Pulse dot */
+        .pulse {
+            position: relative;
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0
+        }
+
+        .pulse::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: var(--teal);
+            animation: pk 2s infinite;
+        }
+
+        .pulse::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 1.5px solid var(--teal);
+            opacity: 0;
+            animation: pr 2s infinite;
+        }
+
+        @keyframes pk {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(.82);
+                opacity: .7
+            }
+        }
+
+        @keyframes pr {
+            0% {
+                transform: scale(.7);
+                opacity: .9
+            }
+
+            100% {
+                transform: scale(2.4);
+                opacity: 0
+            }
+        }
+
+        .h-title {
+            font-family: var(--mono);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--bright);
+            letter-spacing: .03em
+        }
+
+        .h-sub {
+            font-size: .62rem;
+            color: var(--dim);
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            margin-top: 2px
+        }
+
+        .h-right {
+            display: flex;
+            align-items: center;
+            gap: 18px
+        }
+
+        #ts {
+            font-family: var(--mono);
+            font-size: .67rem;
+            color: var(--dim)
+        }
+
+        .btn-ref {
+            font-family: var(--mono);
+            font-size: .72rem;
+            background: transparent;
+            border: 1px solid var(--teal);
+            color: var(--teal);
+            padding: 7px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all .2s;
+            letter-spacing: .06em;
+        }
+
+        .btn-ref:hover {
+            background: var(--teal);
+            color: #000
+        }
+
+        .btn-ref.busy {
+            opacity: .4;
+            pointer-events: none
+        }
+
+        /* ── PAGE LAYOUT ── */
+        .page {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px 32px 48px
+        }
+
+        /* ── SECTION LABEL ── */
+        .slbl {
+            font-family: var(--mono);
+            font-size: .62rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slbl::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border)
+        }
+
+        /* ── KPI CARDS ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .kpi {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform .25s, border-color .25s, box-shadow .25s;
+            cursor: default;
+            opacity: 0;
+            transform: translateY(14px);
+            animation: fu .5s forwards;
+        }
+
+        .kpi:hover {
+            transform: translateY(-3px);
+            border-color: var(--teal);
+            box-shadow: 0 8px 30px rgba(0, 191, 165, .12);
+        }
+
+        .kpi::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--c, var(--teal));
+        }
+
+        .kpi:nth-child(1) {
+            animation-delay: .05s
+        }
+
+        .kpi:nth-child(2) {
+            animation-delay: .10s;
+            --c: var(--green)
+        }
+
+        .kpi:nth-child(3) {
+            animation-delay: .15s;
+            --c: var(--red)
+        }
+
+        .kpi:nth-child(4) {
+            animation-delay: .20s;
+            --c: var(--yellow)
+        }
+
+        .kpi:nth-child(5) {
+            animation-delay: .25s;
+            --c: var(--orange)
+        }
+
+        .kpi:nth-child(6) {
+            animation-delay: .30s;
+            --c: var(--red)
+        }
+
+        @keyframes fu {
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* Glow streak in card */
+        .kpi::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--c, var(--teal)) 0%, transparent 70%);
+            opacity: .07;
+            pointer-events: none;
+        }
+
+        .kpi-lbl {
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--dim);
+            margin-bottom: 10px
+        }
+
+        .kpi-val {
+            font-family: var(--mono);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--bright);
+            line-height: 1;
+            margin-bottom: 4px
+        }
+
+        .kpi-hint {
+            font-size: .65rem;
+            color: var(--dim)
+        }
+
+        /* ── CARD SHELL ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 20px;
+            opacity: 0;
+            animation: fu .5s forwards;
+        }
+
+        .card-t {
+            font-family: var(--mono);
+            font-size: .7rem;
+            color: var(--teal);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        /* ── MID GRID: donut + items side by side ── */
+        .mid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 16px;
+            margin-bottom: 20px
+        }
+
+        .mid .card:first-child {
+            animation-delay: .38s
+        }
+
+        .mid .card:last-child {
+            animation-delay: .44s
+        }
+
+        /* ── DONUT ── */
+        .donut-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center
+        }
+
+        .donut-svgbox {
+            position: relative;
+            width: 190px;
+            height: 190px
+        }
+
+        .donut-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .d-pct {
+            font-family: var(--mono);
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: var(--teal);
+            line-height: 1
+        }
+
+        .d-sub {
+            font-size: .58rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            margin-top: 4px
+        }
+
+        .legend {
+            margin-top: 18px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px
+        }
+
+        .lgnd {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .68rem;
+            color: var(--dim)
+        }
+
+        .ldot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+
+        .avg-wrap {
+            margin-top: 18px;
+            width: 100%
+        }
+
+        .avg-hdr {
+            display: flex;
+            justify-content: space-between;
+            font-size: .64rem;
+            color: var(--dim);
+            margin-bottom: 5px
+        }
+
+        .avg-bg {
+            background: var(--bg2);
+            border-radius: 4px;
+            height: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border)
+        }
+
+        .avg-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--teal-dim), var(--teal));
+            transition: width 1.3s cubic-bezier(.4, 0, .2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 6px;
+            font-family: var(--mono);
+            font-size: .62rem;
+            color: #000;
+            font-weight: 700;
+        }
+
+        /* ── ITEM BARS ── */
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            overflow-y: auto;
+            padding-right: 4px
+        }
+
+        .items-list::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .items-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px
+        }
+
+        .i-row {
+            display: grid;
+            grid-template-columns: 210px 1fr 40px;
+            align-items: center;
+            gap: 10px
+        }
+
+        .i-name {
+            font-size: .72rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .b-bg {
+            background: var(--bg2);
+            border-radius: 3px;
+            height: 8px;
+            overflow: hidden
+        }
+
+        .b-fill {
+            height: 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 1s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .b-pct {
+            font-family: var(--mono);
+            font-size: .62rem;
+            color: var(--dim);
+            text-align: right
+        }
+
+        /* ── TOP 3 ── */
+        .top3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px
+        }
+
+        .t3c {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            opacity: 0;
+            animation: fu .5s forwards;
+            border-left: 3px solid var(--red);
+        }
+
+        .t3c:nth-child(1) {
+            animation-delay: .46s
+        }
+
+        .t3c:nth-child(2) {
+            animation-delay: .52s
+        }
+
+        .t3c:nth-child(3) {
+            animation-delay: .58s
+        }
+
+        .t3-rank {
+            font-family: var(--mono);
+            font-size: .6rem;
+            color: var(--red);
+            letter-spacing: .12em;
+            margin-bottom: 7px
+        }
+
+        .t3-name {
+            font-size: .75rem;
+            color: var(--bright);
+            line-height: 1.35;
+            margin-bottom: 6px
+        }
+
+        .t3-num {
+            font-family: var(--mono);
+            font-size: 1.5rem;
+            color: var(--red);
+            font-weight: 700
+        }
+
+        .t3-lbl {
+            font-size: .62rem;
+            color: var(--dim)
+        }
+
+        /* ── BREAKDOWN GRID ── */
+        .bot {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px
+        }
+
+        .bot .card:first-child {
+            animation-delay: .52s
+        }
+
+        .bot .card:last-child {
+            animation-delay: .58s
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th {
+            font-family: var(--mono);
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--dim);
+            text-align: left;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            font-size: .72rem;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(30, 48, 80, .4);
+            vertical-align: middle
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .mb {
+            background: var(--bg2);
+            border-radius: 2px;
+            height: 6px;
+            overflow: hidden
+        }
+
+        .mbf {
+            height: 100%;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 1s .65s ease
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-size: .6rem;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+
+        .bt {
+            background: rgba(0, 191, 165, .15);
+            color: var(--teal)
+        }
+
+        .by {
+            background: rgba(255, 203, 107, .15);
+            color: var(--yellow)
+        }
+
+        .br {
+            background: rgba(255, 83, 112, .15);
+            color: var(--red)
+        }
+
+        /* ── ALERTS ── */
+        .alerts-card {
+            opacity: 0;
+            animation: fu .5s .64s forwards;
+            margin-bottom: 32px
+        }
+
+        .al-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px
+        }
+
+        .al-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 10px 14px;
+            font-size: .72rem;
+            transition: border-color .2s, transform .15s;
+        }
+
+        .al-item:hover {
+            border-color: var(--teal);
+            transform: translateX(3px)
+        }
+
+        .adot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+
+        .aname {
+            color: var(--bright);
+            font-weight: 600;
+            min-width: 160px
+        }
+
+        .aitem {
+            color: var(--dim);
+            flex: 1;
+            font-size: .68rem
+        }
+
+        .aissue {
+            font-family: var(--mono);
+            font-size: .65rem;
+            white-space: nowrap
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty {
+            font-family: var(--mono);
+            font-size: .75rem;
+            color: var(--dim);
+            padding: 24px;
+            text-align: center
+        }
+
+        /* ── ERROR BANNER ── */
+        #errBox {
+            display: none;
+            background: rgba(255, 83, 112, .1);
+            border: 1px solid var(--red);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            font-family: var(--mono);
+            font-size: .75rem;
+            color: var(--red);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:1100px) {
+            .mid {
+                grid-template-columns: 1fr
+            }
+
+            .bot {
+                grid-template-columns: 1fr
+            }
+
+            .top3 {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading -->
+    <div id="overlay">
+        <div class="sp"></div>
+        <div class="ld-txt">LOADING DASHBOARD</div>
+        <div class="ld-sub">Fetching compliance data from Google Sheets…</div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="h-left">
+            <div class="pulse"></div>
+            <div>
+                <div class="h-title">Healthcare Compliance Tracker</div>
+                <div class="h-sub">Live Analytics Dashboard</div>
+            </div>
+        </div>
+        <div class="h-right">
+            <span id="ts"></span>
+            <button class="btn-ref" id="btnR" onclick="loadData()">↻ REFRESH</button>
+        </div>
+    </header>
+
+    <!-- Page -->
+    <div class="page" id="page" style="display:none">
+
+        <div id="errBox"></div>
+
+        <!-- ── KPIs ── -->
+        <div class="slbl">Key Performance Indicators</div>
+        <div class="kpi-grid">
+            <div class="kpi">
+                <div class="kpi-lbl">Total Students</div>
+                <div class="kpi-val" id="k0">—</div>
+                <div class="kpi-hint">enrolled</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Fully Compliant</div>
+                <div class="kpi-val" id="k1">—</div>
+                <div class="kpi-hint" id="k1h"></div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Non-Compliant</div>
+                <div class="kpi-val" id="k2">—</div>
+                <div class="kpi-hint">below 80%</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Near Compliant</div>
+                <div class="kpi-val" id="k3">—</div>
+                <div class="kpi-hint">80–99%</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Expiring ≤ 30 Days</div>
+                <div class="kpi-val" id="k4">—</div>
+                <div class="kpi-hint">items flagged</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Overdue Items</div>
+                <div class="kpi-val" id="k5">—</div>
+                <div class="kpi-hint">past expiry</div>
+            </div>
+        </div>
+
+        <!-- ── Donut + Item bars ── -->
+        <div class="mid">
+            <div class="card">
+                <div class="card-t">Overall Compliance</div>
+                <div class="donut-wrap">
+                    <div class="donut-svgbox">
+                        <svg width="190" height="190" viewBox="0 0 42 42">
+                            <circle cx="21" cy="21" r="16" fill="none" stroke="#1E3050" stroke-width="3.5" />
+                            <circle cx="21" cy="21" r="16" fill="none" stroke="#00BFA5" stroke-width="3.5"
+                                stroke-dasharray="0 100.53" id="d-arc"
+                                style="transition:stroke-dasharray 1.3s cubic-bezier(.4,0,.2,1);transform-origin:21px 21px;transform:rotate(-90deg)" />
+                        </svg>
+                        <div class="donut-center">
+                            <div class="d-pct" id="dpct">0%</div>
+                            <div class="d-sub">avg score</div>
+                        </div>
+                    </div>
+                    <div class="legend">
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#00BFA5"></div>Compliant
+                        </div>
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#FFCB6B"></div>Expiring
+                        </div>
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#FF5370"></div>Overdue
+                        </div>
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#82AAFF"></div>Pending
+                        </div>
+                    </div>
+                    <div class="avg-wrap">
+                        <div class="avg-hdr"><span>Average Score</span><span id="avgLbl">0%</span></div>
+                        <div class="avg-bg">
+                            <div class="avg-fill" id="avgFill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-t">Compliance by Item</div>
+                <div class="items-list" id="itemList"></div>
+            </div>
+        </div>
+
+        <!-- ── Top 3 Most Missing ── -->
+        <div class="slbl">Top 3 Most Frequently Missing</div>
+        <div class="top3" id="top3"></div>
+
+        <!-- ── Program + Site ── -->
+        <div class="bot">
+            <div class="card">
+                <div class="card-t">By Program</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Program</th>
+                            <th>Students</th>
+                            <th>Avg Score</th>
+                            <th style="width:120px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="progBody"></tbody>
+                </table>
+            </div>
+            <div class="card">
+                <div class="card-t">By Clinical Site</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Site</th>
+                            <th>n</th>
+                            <th>Score</th>
+                            <th style="width:120px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="siteBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── Alerts ── -->
+        <div class="alerts-card">
+            <div class="slbl">Active Alerts</div>
+            <div class="al-list" id="alertList"></div>
+        </div>
+
+    </div><!-- /page -->
+
+    <script>
+        /* ── helpers ── */
+        function col(p) { return p >= 90 ? '#00BFA5' : p >= 70 ? '#FFCB6B' : '#FF5370' }
+        function badge(p) { const c = p >= 90 ? 'bt' : p >= 70 ? 'by' : 'br'; return `<span class="badge ${c}">${p}%</span>` }
+        function count(el, target, ms = 950) {
+            const s = performance.now();
+            (function f(now) {
+                const t = Math.min((now - s) / ms, 1), e = 1 - Math.pow(1 - t, 3);
+                el.textContent = Math.round(target * e);
+                if (t < 1) requestAnimationFrame(f);
+            })(s);
+        }
+
+        /* ── load ── */
+        function loadData() {
+            const btn = document.getElementById('btnR');
+            btn.classList.add('busy'); btn.textContent = '...';
+            google.script.run
+                .withSuccessHandler(render)
+                .withFailureHandler(function (e) {
+                    document.getElementById('errBox').style.display = 'block';
+                    document.getElementById('errBox').textContent = '⚠ Error: ' + (e.message || e);
+                    btn.classList.remove('busy'); btn.textContent = '↻ REFRESH';
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('page').style.display = 'block';
+                })
+                .getSheetData();
+        }
+
+        /* ── render ── */
+        function render(d) {
+            document.getElementById('btnR').classList.remove('busy');
+            document.getElementById('btnR').textContent = '↻ REFRESH';
+            document.getElementById('ts').textContent = 'Updated: ' + (d.generatedAt || '');
+
+            // Fade out loader
+            const ov = document.getElementById('overlay');
+            ov.classList.add('fade');
+            setTimeout(() => ov.style.display = 'none', 550);
+            document.getElementById('page').style.display = 'block';
+
+            const k = d.kpis || {};
+
+            /* KPIs */
+            count(document.getElementById('k0'), k.total || 0);
+            count(document.getElementById('k1'), k.fullyCompliant || 0);
+            count(document.getElementById('k2'), k.nonCompliant || 0);
+            count(document.getElementById('k3'), k.nearCompliant || 0);
+            count(document.getElementById('k4'), k.expiringWithin30 || 0);
+            count(document.getElementById('k5'), k.overdue || 0);
+            const pct = k.total > 0 ? Math.round((k.fullyCompliant / k.total) * 100) : 0;
+            document.getElementById('k1h').textContent = pct + '% of students';
+
+            /* Donut */
+            const avg = k.avgCompliance || 0;
+            let c = 0; const iv = setInterval(() => {
+                c = Math.min(c + 2, avg);
+                document.getElementById('dpct').textContent = c + '%';
+                document.getElementById('avgLbl').textContent = c + '%';
+                if (c >= avg) clearInterval(iv);
+            }, 16);
+            setTimeout(() => {
+                const circ = 100.53; // 2π×16
+                document.getElementById('d-arc').setAttribute('stroke-dasharray', `${(avg / 100) * circ} ${circ}`);
+                document.getElementById('avgFill').style.width = avg + '%';
+                document.getElementById('avgFill').textContent = avg + '%';
+            }, 300);
+
+            /* Item bars */
+            const il = document.getElementById('itemList'); il.innerHTML = '';
+            (d.itemStats || []).forEach((item, i) => {
+                const p = item.pct || 0, c2 = col(p);
+                il.innerHTML += `<div class="i-row">
+        <div class="i-name" title="${item.name}">${item.name}</div>
+        <div class="b-bg"><div class="b-fill" id="ib${i}" style="background:${c2}"></div></div>
+        <div class="b-pct">${p}%</div>
+      </div>`;
+            });
+            setTimeout(() => (d.itemStats || []).forEach((_, i) => {
+                const b = document.getElementById('ib' + i); if (b) b.style.width = (d.itemStats[i].pct || 0) + '%';
+            }), 350);
+
+            /* Top 3 */
+            const t3 = document.getElementById('top3'); t3.innerHTML = '';
+            (d.top3Missing || []).forEach((item, i) => {
+                t3.innerHTML += `<div class="t3c" style="animation-delay:${.46 + i * .06}s">
+        <div class="t3-rank">#${i + 1} MOST MISSING</div>
+        <div class="t3-name">${item.name}</div>
+        <div class="t3-num">${item.missing || 0}</div>
+        <div class="t3-lbl">students missing this item</div>
+      </div>`;
+            });
+
+            /* Programs */
+            const pb = document.getElementById('progBody'); pb.innerHTML = '';
+            (d.byProgram || []).forEach((p, i) => {
+                const c3 = col(p.avgPct);
+                pb.innerHTML += `<tr>
+        <td style="color:var(--bright)">${p.program}</td>
+        <td style="color:var(--dim)">${p.count}</td>
+        <td>${badge(p.avgPct)}</td>
+        <td><div class="mb"><div class="mbf" id="pb${i}" style="background:${c3}"></div></div></td>
+      </tr>`;
+            });
+            setTimeout(() => (d.byProgram || []).forEach((p, i) => {
+                const b = document.getElementById('pb' + i); if (b) b.style.width = p.avgPct + '%';
+            }), 450);
+
+            /* Sites */
+            const sb = document.getElementById('siteBody'); sb.innerHTML = '';
+            (d.bySite || []).forEach((s, i) => {
+                const c4 = col(s.avgPct);
+                sb.innerHTML += `<tr>
+        <td style="color:var(--bright);font-size:.68rem">${s.site}</td>
+        <td style="color:var(--dim)">${s.count}</td>
+        <td>${badge(s.avgPct)}</td>
+        <td><div class="mb"><div class="mbf" id="sb${i}" style="background:${c4}"></div></div></td>
+      </tr>`;
+            });
+            setTimeout(() => (d.bySite || []).forEach((s, i) => {
+                const b = document.getElementById('sb' + i); if (b) b.style.width = s.avgPct + '%';
+            }), 550);
+
+            /* Alerts */
+            const al = document.getElementById('alertList'); al.innerHTML = '';
+            if (!d.alerts || !d.alerts.length) {
+                al.innerHTML = '<div class="empty">✓ No active alerts — all items current.</div>'; return;
+            }
+            d.alerts.forEach(a => {
+                const ov2 = a.issue.includes('OVERDUE'), ms = a.issue === 'Missing';
+                const dot = ov2 ? '#FF5370' : ms ? '#FF8C42' : '#FFCB6B';
+                const ic = ov2 ? 'var(--red)' : ms ? '#FF8C42' : 'var(--yellow)';
+                al.innerHTML += `<div class="al-item">
+        <div class="adot" style="background:${dot}"></div>
+        <div class="aname">${a.name}</div>
+        <div class="aitem">${a.item}</div>
+        <div class="aissue" style="color:${ic}">${a.issue}</div>
+      </div>`;
+            });
+        }
+
+        loadData();
+    </script>
+</body>
+
+</html>

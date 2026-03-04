@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Compliance Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --teal: #00BFA5;
+            --teal-glow: rgba(0, 191, 165, .25);
+            --bg: #080D14;
+            --bg2: #0D1520;
+            --card: #111D2E;
+            --border: #1E3050;
+            --text: #C8D8EC;
+            --dim: #4A6080;
+            --bright: #EEF4FF;
+            --red: #FF5370;
+            --yellow: #FFCB6B;
+            --green: #2ECC71;
+            --orange: #FF8C42;
+            --mono: 'Space Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            background-image:
+                radial-gradient(ellipse at 15% 15%, rgba(0, 191, 165, .06) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 85%, rgba(130, 170, 255, .05) 0%, transparent 55%),
+                linear-gradient(rgba(0, 191, 165, .018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 191, 165, .018) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+        }
+
+        /* ── LOADING ── */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--teal);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .load-txt {
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--dim);
+            letter-spacing: .15em
+        }
+
+        /* ── HEADER ── */
+        .hdr {
+            background: linear-gradient(135deg, #0C1625, #091220);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hdr-l {
+            display: flex;
+            align-items: center;
+            gap: 11px
+        }
+
+        .pulse {
+            position: relative;
+            width: 11px;
+            height: 11px;
+            flex-shrink: 0
+        }
+
+        .pulse::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: var(--teal);
+            animation: pk 2s infinite;
+        }
+
+        .pulse::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1.5px solid var(--teal);
+            opacity: 0;
+            animation: pr 2s infinite;
+        }
+
+        @keyframes pk {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(.85);
+                opacity: .7
+            }
+        }
+
+        @keyframes pr {
+            0% {
+                transform: scale(.8);
+                opacity: .8
+            }
+
+            100% {
+                transform: scale(2.2);
+                opacity: 0
+            }
+        }
+
+        .hdr-title {
+            font-family: var(--mono);
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--bright);
+            letter-spacing: .04em
+        }
+
+        .hdr-sub {
+            font-size: .63rem;
+            color: var(--dim);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-top: 1px
+        }
+
+        .hdr-r {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        #ts {
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--dim)
+        }
+
+        .btn {
+            font-family: var(--mono);
+            font-size: .7rem;
+            background: transparent;
+            border: 1px solid var(--teal);
+            color: var(--teal);
+            padding: 5px 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all .2s;
+            letter-spacing: .05em;
+        }
+
+        .btn:hover {
+            background: var(--teal);
+            color: var(--bg)
+        }
+
+        .btn.busy {
+            opacity: .45;
+            pointer-events: none
+        }
+
+        /* ── LAYOUT ── */
+        .main {
+            padding: 18px 22px
+        }
+
+        .sec-lbl {
+            font-family: var(--mono);
+            font-size: .6rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sec-lbl::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border)
+        }
+
+        /* ── KPI GRID ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .kpi {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 13px 14px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color .25s, transform .2s;
+            cursor: default;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fu .45s forwards;
+        }
+
+        .kpi:hover {
+            border-color: var(--teal);
+            transform: translateY(-2px)
+        }
+
+        .kpi::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--c, var(--teal));
+            border-radius: 9px 9px 0 0;
+        }
+
+        .kpi:nth-child(1) {
+            animation-delay: .04s
+        }
+
+        .kpi:nth-child(2) {
+            animation-delay: .08s;
+            --c: var(--green)
+        }
+
+        .kpi:nth-child(3) {
+            animation-delay: .12s;
+            --c: var(--red)
+        }
+
+        .kpi:nth-child(4) {
+            animation-delay: .16s;
+            --c: var(--yellow)
+        }
+
+        .kpi:nth-child(5) {
+            animation-delay: .20s;
+            --c: var(--orange)
+        }
+
+        .kpi:nth-child(6) {
+            animation-delay: .24s;
+            --c: var(--red)
+        }
+
+        @keyframes fu {
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .kpi-lbl {
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--dim);
+            margin-bottom: 7px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .kpi-val {
+            font-family: var(--mono);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--bright);
+            line-height: 1;
+            margin-bottom: 3px
+        }
+
+        .kpi-hint {
+            font-size: .62rem;
+            color: var(--dim)
+        }
+
+        /* ── MID GRID ── */
+        .mid {
+            display: grid;
+            grid-template-columns: 270px 1fr;
+            gap: 14px;
+            margin-bottom: 16px
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 16px;
+            opacity: 0;
+            animation: fu .45s .38s forwards;
+        }
+
+        .card-t {
+            font-family: var(--mono);
+            font-size: .68rem;
+            color: var(--teal);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 14px
+        }
+
+        /* ── DONUT ── */
+        .donut-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%
+        }
+
+        .donut-svg {
+            position: relative;
+            width: 150px;
+            height: 150px
+        }
+
+        .donut-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donut-pct {
+            font-family: var(--mono);
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--teal);
+            line-height: 1
+        }
+
+        .donut-sub {
+            font-size: .58rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            margin-top: 3px
+        }
+
+        .legend {
+            margin-top: 14px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px
+        }
+
+        .lgnd {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .65rem;
+            color: var(--dim)
+        }
+
+        .ldot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+
+        .avg-bar-wrap {
+            margin-top: 14px;
+            width: 100%
+        }
+
+        .avg-bar-hdr {
+            display: flex;
+            justify-content: space-between;
+            font-size: .62rem;
+            color: var(--dim);
+            margin-bottom: 4px
+        }
+
+        .avg-bg {
+            background: var(--bg2);
+            border-radius: 3px;
+            height: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border)
+        }
+
+        .avg-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #00897B, var(--teal));
+            transition: width 1.2s cubic-bezier(.4, 0, .2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 5px;
+            font-family: var(--mono);
+            font-size: .6rem;
+            color: #000;
+            font-weight: 700;
+        }
+
+        /* ── ITEM BARS ── */
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px
+        }
+
+        .items-list::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .items-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 180px 1fr 34px;
+            align-items: center;
+            gap: 8px
+        }
+
+        .item-name {
+            font-size: .68rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .bar-bg {
+            background: var(--bg2);
+            border-radius: 3px;
+            height: 7px;
+            overflow: hidden
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: width .9s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .bar-pct {
+            font-family: var(--mono);
+            font-size: .6rem;
+            color: var(--dim);
+            text-align: right
+        }
+
+        /* ── BOTTOM GRID ── */
+        .bot {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px
+        }
+
+        .bot .card {
+            animation-delay: .5s
+        }
+
+        .bot .card:last-child {
+            animation-delay: .56s
+        }
+
+        /* ── TABLE ── */
+        .bt {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        .bt th {
+            font-family: var(--mono);
+            font-size: .58rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--dim);
+            text-align: left;
+            padding: 3px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bt td {
+            font-size: .68rem;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(30, 48, 80, .4);
+            vertical-align: middle
+        }
+
+        .bt tr:last-child td {
+            border-bottom: none
+        }
+
+        .mb-bg {
+            background: var(--bg2);
+            border-radius: 2px;
+            height: 5px;
+            overflow: hidden
+        }
+
+        .mb-fill {
+            height: 100%;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 1s .6s ease
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-size: .58rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+
+        .b-teal {
+            background: rgba(0, 191, 165, .15);
+            color: var(--teal)
+        }
+
+        .b-green {
+            background: rgba(46, 204, 113, .15);
+            color: var(--green)
+        }
+
+        .b-yellow {
+            background: rgba(255, 203, 107, .15);
+            color: var(--yellow)
+        }
+
+        .b-red {
+            background: rgba(255, 83, 112, .15);
+            color: var(--red)
+        }
+
+        /* ── ALERTS ── */
+        .alerts-wrap {
+            opacity: 0;
+            animation: fu .45s .65s forwards;
+            margin-bottom: 20px
+        }
+
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px
+        }
+
+        .alert-list::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .alert-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 7px 11px;
+            font-size: .68rem;
+            transition: border-color .2s;
+        }
+
+        .alert-item:hover {
+            border-color: var(--teal)
+        }
+
+        .adot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+
+        .aname {
+            color: var(--bright);
+            font-weight: 500;
+            min-width: 130px;
+            font-size: .68rem
+        }
+
+        .aitem {
+            color: var(--dim);
+            flex: 1;
+            font-size: .65rem
+        }
+
+        .aissue {
+            font-family: var(--mono);
+            font-size: .6rem;
+            white-space: nowrap
+        }
+
+        /* ── TOP 3 MISSING ── */
+        .top3-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px
+        }
+
+        .top3-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            opacity: 0;
+            animation: fu .45s .45s forwards;
+        }
+
+        .top3-rank {
+            font-family: var(--mono);
+            font-size: .6rem;
+            color: var(--red);
+            letter-spacing: .1em;
+            margin-bottom: 6px
+        }
+
+        .top3-name {
+            font-size: .7rem;
+            color: var(--bright);
+            margin-bottom: 4px;
+            line-height: 1.3
+        }
+
+        .top3-count {
+            font-family: var(--mono);
+            font-size: 1.1rem;
+            color: var(--red);
+            font-weight: 700
+        }
+
+        .top3-label {
+            font-size: .6rem;
+            color: var(--dim)
+        }
+
+        .empty {
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--dim);
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading overlay -->
+    <div id="overlay">
+        <div class="spinner"></div>
+        <div class="load-txt">LOADING DASHBOARD</div>
+    </div>
+
+    <!-- Header -->
+    <div class="hdr">
+        <div class="hdr-l">
+            <div class="pulse"></div>
+            <div>
+                <div class="hdr-title">Healthcare Compliance Tracker</div>
+                <div class="hdr-sub">Real-time Analytics</div>
+            </div>
+        </div>
+        <div class="hdr-r">
+            <span id="ts"></span>
+            <button class="btn" id="btnR" onclick="load()">↻ REFRESH</button>
+        </div>
+    </div>
+
+    <!-- Dashboard body -->
+    <div class="main" id="dash" style="display:none">
+
+        <!-- KPI Cards -->
+        <div class="sec-lbl">Key Performance Indicators</div>
+        <div class="kpi-grid">
+            <div class="kpi">
+                <div class="kpi-lbl">Total Students</div>
+                <div class="kpi-val" id="k0">0</div>
+                <div class="kpi-hint">enrolled</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Fully Compliant</div>
+                <div class="kpi-val" id="k1">0</div>
+                <div class="kpi-hint" id="k1h">100%</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Non-Compliant</div>
+                <div class="kpi-val" id="k2">0</div>
+                <div class="kpi-hint">below 80%</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Near Compliant</div>
+                <div class="kpi-val" id="k3">0</div>
+                <div class="kpi-hint">80–99%</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Expiring ≤ 30d</div>
+                <div class="kpi-val" id="k4">0</div>
+                <div class="kpi-hint">items</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-lbl">Overdue Items</div>
+                <div class="kpi-val" id="k5">0</div>
+                <div class="kpi-hint">past expiry</div>
+            </div>
+        </div>
+
+        <!-- Donut + Item bars -->
+        <div class="mid">
+            <div class="card">
+                <div class="card-t">Overall Compliance</div>
+                <div class="donut-wrap">
+                    <div class="donut-svg">
+                        <svg width="150" height="150" viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="13.5" fill="none" stroke="#1E3050" stroke-width="3" />
+                            <circle cx="18" cy="18" r="13.5" fill="none" stroke="#00BFA5" stroke-width="3"
+                                stroke-dasharray="0 100" id="d-arc"
+                                style="transition:stroke-dasharray 1.2s ease;transform-origin:18px 18px;transform:rotate(-90deg)" />
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-pct" id="dpct">0%</div>
+                            <div class="donut-sub">avg score</div>
+                        </div>
+                    </div>
+                    <div class="legend">
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#00BFA5"></div>Compliant
+                        </div>
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#FFCB6B"></div>Expiring
+                        </div>
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#FF5370"></div>Overdue
+                        </div>
+                        <div class="lgnd">
+                            <div class="ldot" style="background:#82AAFF"></div>Pending
+                        </div>
+                    </div>
+                    <div class="avg-bar-wrap">
+                        <div class="avg-bar-hdr"><span>Average Score</span><span id="avg-lbl">0%</span></div>
+                        <div class="avg-bg">
+                            <div class="avg-fill" id="avg-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="animation-delay:.44s">
+                <div class="card-t">Compliance by Item</div>
+                <div class="items-list" id="itemList"></div>
+            </div>
+        </div>
+
+        <!-- Top 3 Most Missing -->
+        <div class="sec-lbl" style="animation-delay:.43s">Top 3 Most Frequently Missing</div>
+        <div class="top3-grid" id="top3"></div>
+
+        <!-- Program + Site breakdown -->
+        <div class="bot">
+            <div class="card">
+                <div class="card-t">By Program</div>
+                <table class="bt">
+                    <thead>
+                        <tr>
+                            <th>Program</th>
+                            <th>Students</th>
+                            <th>Score</th>
+                            <th style="width:90px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="progBody"></tbody>
+                </table>
+            </div>
+            <div class="card">
+                <div class="card-t">By Clinical Site</div>
+                <table class="bt">
+                    <thead>
+                        <tr>
+                            <th>Site</th>
+                            <th>n</th>
+                            <th>Score</th>
+                            <th style="width:90px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="siteBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Active Alerts -->
+        <div class="alerts-wrap">
+            <div class="sec-lbl">Active Alerts</div>
+            <div class="alert-list" id="alertList"></div>
+        </div>
+    </div>
+
+    <script>
+        function barColor(p) { return p >= 90 ? '#00BFA5' : p >= 70 ? '#FFCB6B' : '#FF5370' }
+        function badge(p) {
+            const cls = p >= 90 ? 'b-teal' : p >= 70 ? 'b-yellow' : 'b-red';
+            return `<span class="badge ${cls}">${p}%</span>`;
+        }
+
+        function counter(el, target, ms = 900) {
+            const s = performance.now();
+            (function tick(now) {
+                const t = Math.min((now - s) / ms, 1), e = 1 - Math.pow(1 - t, 3);
+                el.textContent = Math.round(target * e);
+                if (t < 1) requestAnimationFrame(tick);
+            })(s);
+        }
+
+        function load() {
+            const btn = document.getElementById('btnR');
+            btn.classList.add('busy'); btn.textContent = '...';
+            google.script.run
+                .withSuccessHandler(render)
+                .withFailureHandler(err => { btn.classList.remove('busy'); btn.textContent = '↻ REFRESH'; alert('Error: ' + err.message); })
+                .getDashboardData();
+        }
+
+        function render(d) {
+            document.getElementById('btnR').classList.remove('busy');
+            document.getElementById('btnR').textContent = '↻ REFRESH';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('dash').style.display = 'block';
+            document.getElementById('ts').textContent = 'Updated: ' + (d.generatedAt || '');
+
+            // KPIs
+            const k = d.kpis || {};
+            counter(document.getElementById('k0'), k.total || 0);
+            counter(document.getElementById('k1'), k.fullyCompliant || 0);
+            counter(document.getElementById('k2'), k.nonCompliant || 0);
+            counter(document.getElementById('k3'), k.nearCompliant || 0);
+            counter(document.getElementById('k4'), k.expiringWithin30 || 0);
+            counter(document.getElementById('k5'), k.overdue || 0);
+            const pct = k.total > 0 ? Math.round((k.fullyCompliant / k.total) * 100) : 0;
+            document.getElementById('k1h').textContent = pct + '% of students';
+
+            // Donut
+            const avg = k.avgCompliance || 0;
+            let c = 0; const iv = setInterval(() => {
+                c = Math.min(c + 2, avg);
+                document.getElementById('dpct').textContent = c + '%';
+                document.getElementById('avg-lbl').textContent = c + '%';
+                if (c >= avg) clearInterval(iv);
+            }, 18);
+            setTimeout(() => {
+                const circ = 84.82; // 2*pi*13.5
+                document.getElementById('d-arc').setAttribute('stroke-dasharray', `${(avg / 100) * circ} ${circ}`);
+                document.getElementById('avg-fill').style.width = avg + '%';
+                document.getElementById('avg-fill').textContent = avg + '%';
+            }, 250);
+
+            // Item bars
+            const il = document.getElementById('itemList');
+            il.innerHTML = '';
+            (d.itemStats || []).forEach((item, i) => {
+                const p = item.pct || 0, col = barColor(p);
+                il.innerHTML += `<div class="item-row">
+        <div class="item-name" title="${item.name}">${item.name}</div>
+        <div class="bar-bg"><div class="bar-fill" id="ib${i}" style="background:${col}"></div></div>
+        <div class="bar-pct">${p}%</div>
+      </div>`;
+            });
+            setTimeout(() => (d.itemStats || []).forEach((item, i) => {
+                const b = document.getElementById('ib' + i); if (b) b.style.width = (item.pct || 0) + '%';
+            }), 300);
+
+            // Top 3 Missing
+            const t3 = document.getElementById('top3');
+            t3.innerHTML = '';
+            (d.top3Missing || []).forEach((item, i) => {
+                t3.innerHTML += `<div class="top3-card" style="animation-delay:${.45 + i * .06}s">
+        <div class="top3-rank">#${i + 1} MOST MISSING</div>
+        <div class="top3-name">${item.name}</div>
+        <div class="top3-count">${item.missing || 0}</div>
+        <div class="top3-label">students missing</div>
+      </div>`;
+            });
+
+            // Program table
+            const pb = document.getElementById('progBody'); pb.innerHTML = '';
+            (d.byProgram || []).forEach((p, i) => {
+                const col = barColor(p.avgPct);
+                pb.innerHTML += `<tr>
+        <td style="color:var(--bright)">${p.program}</td>
+        <td style="color:var(--dim)">${p.count}</td>
+        <td>${badge(p.avgPct)}</td>
+        <td><div class="mb-bg"><div class="mb-fill" id="pb${i}" style="background:${col}"></div></div></td>
+      </tr>`;
+            });
+            setTimeout(() => (d.byProgram || []).forEach((p, i) => {
+                const b = document.getElementById('pb' + i); if (b) b.style.width = p.avgPct + '%';
+            }), 400);
+
+            // Site table
+            const sb = document.getElementById('siteBody'); sb.innerHTML = '';
+            (d.bySite || []).forEach((s, i) => {
+                const col = barColor(s.avgPct);
+                sb.innerHTML += `<tr>
+        <td style="color:var(--bright);font-size:.64rem">${s.site}</td>
+        <td style="color:var(--dim)">${s.count}</td>
+        <td>${badge(s.avgPct)}</td>
+        <td><div class="mb-bg"><div class="mb-fill" id="sb${i}" style="background:${col}"></div></div></td>
+      </tr>`;
+            });
+            setTimeout(() => (d.bySite || []).forEach((s, i) => {
+                const b = document.getElementById('sb' + i); if (b) b.style.width = s.avgPct + '%';
+            }), 500);
+
+            // Alerts
+            const al = document.getElementById('alertList'); al.innerHTML = '';
+            if (!d.alerts || !d.alerts.length) {
+                al.innerHTML = '<div class="empty">✓ No active alerts</div>'; return;
+            }
+            d.alerts.forEach(a => {
+                const ov = a.issue.includes('OVERDUE'), ms = a.issue === 'Missing';
+                const dot = ov ? '#FF5370' : ms ? '#FF8C42' : '#FFCB6B';
+                const ic = ov ? 'var(--red)' : ms ? '#FF8C42' : 'var(--yellow)';
+                al.innerHTML += `<div class="alert-item">
+        <div class="adot" style="background:${dot}"></div>
+        <div class="aname">${a.name}</div>
+        <div class="aitem">${a.item}</div>
+        <div class="aissue" style="color:${ic}">${a.issue}</div>
+      </div>`;
+            });
+        }
+
+        // ── Maximize dialog to fill available screen ──
+        try {
+            const W = window.screen.availWidth - 16;
+            const H = window.screen.availHeight - 60;
+            google.script.host.setWidth(W);
+            google.script.host.setHeight(H);
+        } catch (e) { }
+
+        load();    </script>
+</body>
+
+</html>
