@@ -4,7 +4,7 @@
  * All constants, sheet names, colors, parameters, and definitions are stored here.
  */
 
-const CONFIG = {
+/**\n * Central Configuration Object\n */\nconst CONFIG = {
   SHEET_NAMES: {
     DATA: 'Compliance Data',
     DASHBOARD: 'Dashboard',
