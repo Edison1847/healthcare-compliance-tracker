@@ -166,29 +166,35 @@ Styled HTML emails sent every Monday at 8 AM to Staff members with missing or ex
 ## File Structure
 
 ```
-HealthcareComplianceTracker/
-  Config.gs              # All constants — single source of truth
-  Orchestrator.gs        # onOpen, onEdit, custom menu wiring
-  AgentData.gs           # Sheet column structure
-  AgentFormat.gs         # Formatting, dropdowns, debounce
-  AgentDashboard.gs      # KPI engine + modal opener
-  AgentDrive.gs          # Drive scaffolding + placeholders
-  AgentAlerts.gs         # Expiry checker + email dispatch
-  AgentLog.gs            # Centralized logging
-  Dashboard.html         # In-Sheets modal dashboard
-  WebApp.gs              # Web App doGet() entry point
-  WebDashboard.html      # Standalone browser dashboard
-  CaseStudies/
-    healthcare_compliance_tracker_case_study.md
-  test_staff.csv      # 15-row synthetic test dataset
-  generate_test_data.py  # Script that generated test_staff.csv
+healthcare-compliance-tracker/
+  ├── README.md              # Project documentation
+  ├── demo/
+  │   ├── demo-video-link.md # Video demo links
+  ├── docs/
+  │   ├── case-study.md      # Full case study writeup
+  │   └── setup-guide.md     # Installation & setup instructions
+  ├── src/
+  │   ├── Config.gs          # All constants
+  │   ├── Orchestrator.gs    # onOpen, onEdit, menus
+  │   ├── AgentData.gs       # Sheet column structure
+  │   ├── AgentFormat.gs     # Formatting & debounce
+  │   ├── AgentDashboard.gs  # KPI engine
+  │   ├── AgentDrive.gs      # Drive scaffolding
+  │   ├── AgentAlerts.gs     # Expiry emails
+  │   ├── AgentLog.gs        # Centralized logging
+  │   ├── Dashboard.html     # In-Sheets modal
+  │   ├── WebApp.gs          # Web App entry
+  │   └── WebDashboard.html  # Standalone browser dashboard
+  └── sample-data/
+      ├── test_students.csv  # 15-row synthetic test dataset
+      └── generate_test_data.py # Script used for CSV generation
 ```
 
 ---
 
 ## Setup & Deployment
 
-See [setup_guide.md](./setup_guide.md) for full step-by-step instructions including:
+See [setup-guide.md](./docs/setup-guide.md) for full step-by-step instructions including:
 - Apps Script editor paste order
 - Time-based trigger configuration
 - Drive folder scaffolding steps
