@@ -58,6 +58,32 @@ WebApp.gs → doGet() → WebDashboard.html (standalone browser dashboard)
 
 ---
 
+## Why a Multi-Agent Architecture in Apps Script?
+
+The uniqueness of this project lies in its adoption of a multi-agent architectural pattern within Google Apps Script—an environment typically dominated by monolithic, difficult-to-maintain 1000-line scripts.
+
+### What the Agent Pattern Actually Changed
+- **Maintainability:** Transitioned from a monolith to 8 focused files. Modifying one process (like creating Drive folders) doesn't risk breaking others.
+- **Single Responsibility:** Each agent (`AgentDrive`, `AgentAlerts`, etc.) does exactly one job.
+- **Config Isolation:** All constants live in `Config.gs`. Add an item there, and every agent updates automatically.
+- **Reusable Operations:** `AgentLog.gs` and standard utilities are easily shared and uniform.
+
+### What Did NOT Change
+In Apps Script, the "agent" title is a design philosophy, not a runtime capability:
+- Apps Script is **single-threaded**. Agents do not run in parallel.
+- Agents are not fully autonomous; they are sequential procedures dispatched by the **Orchestrator**.
+- There is no internal agent state. Truth lives entirely in the Google Sheet database.
+
+### What a Real Multi-Agent System Would Have
+A true multi-agent runtime would feature agents that run concurrently in separate processes, communicate via asynchronous message buses, and independently make stateful decisions without central orchestration.
+
+### Was It Worth Doing?
+**Yes.** While lacking runtime autonomy, the pattern completely solved codebase scaling. When the client requested a new compliance item, it took editing exactly one line in `Config.gs`. Adding an entirely new agent (like `AgentReports.gs`) means isolated development without touching existing legacy code.
+
+**Bottom Line:** The agent pattern brought enterprise-level code organization and maintainability to a serverless Apps Script environment, proving that robust, modular design patterns matter heavily regardless of execution constraints.
+
+---
+
 ## Compliance Items Tracked
 
 | # | Item | Key | Renews |
@@ -199,10 +225,6 @@ MIT License — free to use, fork, and modify for personal or commercial project
 
 <div align="center">
 
-**Built by Dilshan Ganepola**  
-MSc Health Informatics | MRCGP | US Patent Holder  
+**Built by Dilshan Ganepola — MSc Health Informatics | MRCGP | US Patent Holder**  
 General Physician & Healthcare AI Consultant
-
-*Bridging clinical expertise with software engineering to build tools that make healthcare administration safer, faster, and more reliable.*
-
 </div>
