@@ -1,5 +1,5 @@
 # Healthcare Compliance Tracker
-### Automated Multi-Agent Compliance Management System for Healthcare Education Programs
+### Automated Multi-Agent Compliance Management System for Healthcare Programs
 
 ![Google Apps Script](https://img.shields.io/badge/Google%20Apps%20Script-4285F4?style=flat&logo=google&logoColor=white)
 ![Google Sheets](https://img.shields.io/badge/Google%20Sheets-34A853?style=flat&logo=google-sheets&logoColor=white)
@@ -11,11 +11,11 @@
 
 ## The Problem
 
-Healthcare education programs require students to maintain 15+ compliance documents — from HIPAA certifications and TB tests to background checks and liability insurance — each with different renewal schedules, expiry windows, and filing categories. Managing this across multiple cohorts, programs, and clinical sites using manual spreadsheets results in:
+Healthcare education programs require staff to maintain 15+ compliance documents — from HIPAA certifications and TB tests to background checks and liability insurance — each with different renewal schedules, expiry windows, and filing categories. Managing this across multiple cohorts, programs, and clinical sites using manual spreadsheets results in:
 
-- **Missed expiry deadlines** leading to students being removed from clinical placements
+- **Missed expiry deadlines** leading to staff personals being removed from clinical placements
 - **Administrative bottlenecks** consuming hours of coordinator time per week
-- **No central visibility** into which students, programs, or sites are non-compliant
+- **No central visibility** into which staff, programs, or sites are non-compliant
 - **Reactive, not proactive** alerting — coordinators only notice problems after they occur
 
 ---
@@ -30,7 +30,7 @@ Built as a **multi-agent Google Apps Script system** — 8 independent agents or
 | `AgentData.gs` | Sheet structure validation and column management |
 | `AgentFormat.gs` | Real-time color coding and dropdown validation on edit |
 | `AgentDashboard.gs` | KPI computation and dashboard data bridge |
-| `AgentDrive.gs` | Drive folder tree scaffolding per student |
+| `AgentDrive.gs` | Drive folder tree scaffolding per staff member |
 | `AgentAlerts.gs` | Weekly expiry scanning and HTML email dispatch |
 | `AgentLog.gs` | Centralized logging across all agents |
 | `Config.gs` | All constants — zero hardcoding in any other file |
@@ -50,7 +50,7 @@ Google Sheet (Compliance Data)
       │         ├── AgentDashboard.gs  → KPI computation
       │         └── AgentAlerts.gs     → expiry scan + email (Monday 8AM trigger)
       |
-      ├── AgentDrive.gs (manual, per-student Drive scaffolding)
+      ├── AgentDrive.gs (manual, per-staff member Drive scaffolding)
       └── AgentLog.gs   (called by all agents, writes to System Logs sheet)
 
 WebApp.gs → doGet() → WebDashboard.html (standalone browser dashboard)
@@ -97,9 +97,9 @@ WebApp.gs → doGet() → WebDashboard.html (standalone browser dashboard)
 
 ## Key Results
 
-- **100% elimination** of manual folder creation for new student onboarding — Drive agent auto-scaffolds cohort/student directory trees in seconds
+- **100% elimination** of manual folder creation for new staff member onboarding — Drive agent auto-scaffolds cohort/staff directory trees in seconds
 - **Compliance audit time reduced from hours to seconds** — the live Web App dashboard computes all KPIs on demand from raw sheet data
-- **Proactive expiry prevention** — automated weekly scan flags and emails students 30 days before any document expires, preventing clinical placement disruptions
+- **Proactive expiry prevention** — automated weekly scan flags and emails staff members 30 days before any document expires, preventing clinical placement disruptions
 - **15 compliance items tracked** with custom renewal windows, computed compliance percentages, and 5 status states per item
 - **39 columns, 1 structured sheet** — fully validated dropdowns, color-coded statuses, auto-timestamps on every edit
 - **0 external dependencies** — runs entirely in Google Workspace, no npm, no deployment pipeline, no servers
@@ -118,22 +118,22 @@ A standalone browser dashboard deployed as a Google Apps Script Web App. Open in
 - Live active alerts feed (overdue / expiring / missing)
 
 ### Drive Folder Architecture
-For each new student, the Drive Agent creates:
+For each new staff member, the Drive Agent creates:
 ```
 Healthcare Compliance Records/
   YYYY/
     Cohort_YYYY-A/
-      StudentID_FirstName_LastName/
+      StaffMemberID_FirstName_LastName/
         01_Certifications/
         02_Health_Records/
         03_Background_Checks/
         04_Agreements/
         05_Training_Completions/
 ```
-Plus 15 pre-named placeholder `.txt` files, each containing student ID, document type, creation date, expected expiry, and naming convention reminders.
+Plus 15 pre-named placeholder `.txt` files, each containing StaffMember ID, document type, creation date, expected expiry, and naming convention reminders.
 
 ### Automated Email Alerts
-Styled HTML emails sent every Monday at 8 AM to students with missing or expiring items. Color-coded table highlights overdue (red) vs. expiring (yellow) vs. missing (orange) items.
+Styled HTML emails sent every Monday at 8 AM to Staff members with missing or expiring items. Color-coded table highlights overdue (red) vs. expiring (yellow) vs. missing (orange) items.
 
 ---
 
@@ -154,8 +154,8 @@ HealthcareComplianceTracker/
   WebDashboard.html      # Standalone browser dashboard
   CaseStudies/
     healthcare_compliance_tracker_case_study.md
-  test_students.csv      # 15-row synthetic test dataset
-  generate_test_data.py  # Script that generated test_students.csv
+  test_staff.csv      # 15-row synthetic test dataset
+  generate_test_data.py  # Script that generated test_staff.csv
 ```
 
 ---
@@ -179,13 +179,13 @@ Quick start:
 
 ## Test Data
 
-A synthetic 15-student CSV dataset (`test_students.csv`) is included covering:
-- Fully compliant students
-- Students with items expiring within 7 / 12 / 20 / 28 days
-- Students with overdue items
-- Students with missing items
-- Brand new students (all pending)
-- Students with N/A items
+A synthetic 15-staff CSV dataset (`test_staff.csv`) is included covering:
+- Fully compliant staff members
+- Staff members with items expiring within 7 / 12 / 20 / 28 days
+- Staff members with overdue items
+- Staff members with missing items
+- Brand new Staff members (all pending)
+- Staff members with N/A items
 
 Import via **File → Import** into the Compliance Data sheet starting at row 2.
 
