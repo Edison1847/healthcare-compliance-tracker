@@ -3,7 +3,7 @@ generate_test_data.py
 Generates a realistic CSV test dataset for the Healthcare Compliance Tracker.
 Matches the exact column structure produced by AgentData.gs.
 Run: python generate_test_data.py
-Output: test_students.csv
+Output: test_staff.csv
 """
 
 import csv
@@ -18,7 +18,7 @@ def d(offset_days):
 
 # ── Headers — must match AgentData.gs exactly ──
 HEADERS = [
-    "ID", "Student Name", "Program", "Cohort", "Start Date",
+    "ID", "Staff member Name", "Program", "Cohort", "Start Date",
     "Email", "Phone", "Clinical Site", "Advisor",
 
     "HIPAA Training Certificate (HIPAA_CERT) - Status",
@@ -51,7 +51,7 @@ HEADERS = [
     "Compliance Percentage", "Overall Status", "Last Updated", "Notes"
 ]
 
-# ── Student rows ──
+# ── Staff rows ──
 # Format notes:
 #   Expiring soon = within 30 days  (offset +7 to +30)
 #   Overdue       = past date        (offset -30 to -1)
@@ -61,9 +61,9 @@ HEADERS = [
 ROWS = [
     # ─── S001 — FULLY COMPLIANT ───────────────────────────────────────────
     {
-        "ID": "S001", "Student Name": "Amelia Hartwell",
+        "ID": "S001", "Staff member Name": "Amelia Hartwell",
         "Program": "Nursing", "Cohort": "Cohort_2025-A",
-        "Start Date": "01/15/2025", "Email": "a.hartwell@student.edu",
+        "Start Date": "01/15/2025", "Email": "a.hartwell@staff.edu",
         "Phone": "555-210-0001", "Clinical Site": "City Medical Center",
         "Advisor": "Dr. Patricia Moore",
         # HIPAA annually
@@ -97,9 +97,9 @@ ROWS = [
     },
     # ─── S002 — EXPIRING SOON (HIPAA & TB expiring within 30 days) ────────
     {
-        "ID": "S002", "Student Name": "Marcus Rivera",
+        "ID": "S002", "Staff member Name": "Marcus Rivera",
         "Program": "Nursing", "Cohort": "Cohort_2025-A",
-        "Start Date": "01/15/2025", "Email": "m.rivera@student.edu",
+        "Start Date": "01/15/2025", "Email": "m.rivera@staff.edu",
         "Phone": "555-210-0002", "Clinical Site": "City Medical Center",
         "Advisor": "Dr. Patricia Moore",
         "HIPAA_STATUS": "Expiring", "HIPAA_EXP": d(12),     # 12 days left!
@@ -121,9 +121,9 @@ ROWS = [
     },
     # ─── S003 — MISSING ITEMS ────────────────────────────────────────────
     {
-        "ID": "S003", "Student Name": "Priya Nair",
+        "ID": "S003", "Staff member Name": "Priya Nair",
         "Program": "Medical Assisting", "Cohort": "Cohort_2025-B",
-        "Start Date": "06/01/2025", "Email": "p.nair@student.edu",
+        "Start Date": "06/01/2025", "Email": "p.nair@staff.edu",
         "Phone": "555-210-0003", "Clinical Site": "Riverside Clinic",
         "Advisor": "Dr. James Chen",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(320),
@@ -145,9 +145,9 @@ ROWS = [
     },
     # ─── S004 — OVERDUE ITEMS ────────────────────────────────────────────
     {
-        "ID": "S004", "Student Name": "Terrence Wallace",
+        "ID": "S004", "Staff member Name": "Terrence Wallace",
         "Program": "Physical Therapy", "Cohort": "Cohort_2025-A",
-        "Start Date": "01/20/2025", "Email": "t.wallace@student.edu",
+        "Start Date": "01/20/2025", "Email": "t.wallace@staff.edu",
         "Phone": "555-210-0004", "Clinical Site": "Memorial Hospital",
         "Advisor": "Dr. Sarah Williams",
         "HIPAA_STATUS": "Expiring", "HIPAA_EXP": d(-15),    # OVERDUE
@@ -169,9 +169,9 @@ ROWS = [
     },
     # ─── S005 — NEAR COMPLIANT ───────────────────────────────────────────
     {
-        "ID": "S005", "Student Name": "Keisha Thompson",
+        "ID": "S005", "Staff member Name": "Keisha Thompson",
         "Program": "Dental Hygiene", "Cohort": "Cohort_2025-B",
-        "Start Date": "06/10/2025", "Email": "k.thompson@student.edu",
+        "Start Date": "06/10/2025", "Email": "k.thompson@staff.edu",
         "Phone": "555-210-0005", "Clinical Site": "Lakeside Health",
         "Advisor": "Dr. Robert Davis",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(340),
@@ -193,9 +193,9 @@ ROWS = [
     },
     # ─── S006 — FULLY COMPLIANT ──────────────────────────────────────────
     {
-        "ID": "S006", "Student Name": "Dylan O'Brien",
+        "ID": "S006", "Staff member Name": "Dylan O'Brien",
         "Program": "Nursing", "Cohort": "Cohort_2026-A",
-        "Start Date": "01/12/2026", "Email": "d.obrien@student.edu",
+        "Start Date": "01/12/2026", "Email": "d.obrien@staff.edu",
         "Phone": "555-210-0006", "Clinical Site": "Sunrise Urgent Care",
         "Advisor": "Dr. Patricia Moore",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(360),
@@ -215,11 +215,11 @@ ROWS = [
         "COMP_PCT": "100%", "OVERALL": "Compliant",
         "NOTES": "New cohort 2026-A, all docs submitted at enrollment."
     },
-    # ─── S007 — MOSTLY MISSING (new student) ─────────────────────────────
+    # ─── S007 — MOSTLY MISSING (new Staff member) ─────────────────────────────
     {
-        "ID": "S007", "Student Name": "Fatima Al-Hassan",
+        "ID": "S007", "Staff member Name": "Fatima Al-Hassan",
         "Program": "Medical Assisting", "Cohort": "Cohort_2026-A",
-        "Start Date": "02/01/2026", "Email": "f.alhassan@student.edu",
+        "Start Date": "02/01/2026", "Email": "f.alhassan@staff.edu",
         "Phone": "555-210-0007", "Clinical Site": "Riverside Clinic",
         "Advisor": "Dr. James Chen",
         "HIPAA_STATUS": "Pending", "HIPAA_EXP": "",
@@ -237,13 +237,13 @@ ROWS = [
         "BBP_STATUS": "Missing", "BBP_EXP": "",
         "CLEARANCE_STATUS": "Missing", "CLEARANCE_EXP": "",
         "COMP_PCT": "20%", "OVERALL": "Non-Compliant",
-        "NOTES": "New student. Most documents still outstanding."
+        "NOTES": "New Staff member. Most documents still outstanding."
     },
     # ─── S008 — EXPIRING WITHIN 7 DAYS ──────────────────────────────────
     {
-        "ID": "S008", "Student Name": "Nathan Okafor",
+        "ID": "S008", "Staff member Name": "Nathan Okafor",
         "Program": "Physical Therapy", "Cohort": "Cohort_2025-A",
-        "Start Date": "01/15/2025", "Email": "n.okafor@student.edu",
+        "Start Date": "01/15/2025", "Email": "n.okafor@staff.edu",
         "Phone": "555-210-0008", "Clinical Site": "Memorial Hospital",
         "Advisor": "Dr. Sarah Williams",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(290),
@@ -265,9 +265,9 @@ ROWS = [
     },
     # ─── S009 — N/A ITEMS (dental, no LIC_VER) ──────────────────────────
     {
-        "ID": "S009", "Student Name": "Sophie Laurent",
+        "ID": "S009", "Staff member Name": "Sophie Laurent",
         "Program": "Dental Hygiene", "Cohort": "Cohort_2025-B",
-        "Start Date": "06/15/2025", "Email": "s.laurent@student.edu",
+        "Start Date": "06/15/2025", "Email": "s.laurent@staff.edu",
         "Phone": "555-210-0009", "Clinical Site": "Lakeside Health",
         "Advisor": "Dr. Robert Davis",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(310),
@@ -289,9 +289,9 @@ ROWS = [
     },
     # ─── S010 — MIX: SOME MISSING, SOME EXPIRING ─────────────────────────
     {
-        "ID": "S010", "Student Name": "Carlos Mendez",
+        "ID": "S010", "Staff member Name": "Carlos Mendez",
         "Program": "Nursing", "Cohort": "Cohort_2025-B",
-        "Start Date": "06/05/2025", "Email": "c.mendez@student.edu",
+        "Start Date": "06/05/2025", "Email": "c.mendez@staff.edu",
         "Phone": "555-210-0010", "Clinical Site": "City Medical Center",
         "Advisor": "Dr. Patricia Moore",
         "HIPAA_STATUS": "Expiring", "HIPAA_EXP": d(25),
@@ -313,9 +313,9 @@ ROWS = [
     },
     # ─── S011 — FULLY COMPLIANT ──────────────────────────────────────────
     {
-        "ID": "S011", "Student Name": "Yuki Tanaka",
+        "ID": "S011", "Staff member Name": "Yuki Tanaka",
         "Program": "Medical Assisting", "Cohort": "Cohort_2025-A",
-        "Start Date": "01/20/2025", "Email": "y.tanaka@student.edu",
+        "Start Date": "01/20/2025", "Email": "y.tanaka@staff.edu",
         "Phone": "555-210-0011", "Clinical Site": "Sunrise Urgent Care",
         "Advisor": "Dr. James Chen",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(330),
@@ -337,9 +337,9 @@ ROWS = [
     },
     # ─── S012 — OVERDUE CLEARANCE ────────────────────────────────────────
     {
-        "ID": "S012", "Student Name": "Bianca Rossi",
+        "ID": "S012", "Staff member Name": "Bianca Rossi",
         "Program": "Physical Therapy", "Cohort": "Cohort_2025-B",
-        "Start Date": "06/12/2025", "Email": "b.rossi@student.edu",
+        "Start Date": "06/12/2025", "Email": "b.rossi@staff.edu",
         "Phone": "555-210-0012", "Clinical Site": "Riverside Clinic",
         "Advisor": "Dr. Sarah Williams",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(298),
@@ -359,11 +359,11 @@ ROWS = [
         "COMP_PCT": "93%", "OVERALL": "Overdue",
         "NOTES": "Child Abuse Clearance expired 20 days ago. Must renew immediately."
     },
-    # ─── S013 — ALL PENDING (brand new student) ──────────────────────────
+    # ─── S013 — ALL PENDING (brand new Staff member) ──────────────────────────
     {
-        "ID": "S013", "Student Name": "Elijah Brooks",
+        "ID": "S013", "Staff member Name": "Elijah Brooks",
         "Program": "Dental Hygiene", "Cohort": "Cohort_2026-A",
-        "Start Date": "02/15/2026", "Email": "e.brooks@student.edu",
+        "Start Date": "02/15/2026", "Email": "e.brooks@staff.edu",
         "Phone": "555-210-0013", "Clinical Site": "Lakeside Health",
         "Advisor": "Dr. Robert Davis",
         "HIPAA_STATUS": "Pending", "HIPAA_EXP": "",
@@ -381,13 +381,13 @@ ROWS = [
         "BBP_STATUS": "Pending", "BBP_EXP": "",
         "CLEARANCE_STATUS": "Pending", "CLEARANCE_EXP": "",
         "COMP_PCT": "7%", "OVERALL": "Non-Compliant",
-        "NOTES": "Brand new student Feb 2026. All docs pending submission."
+        "NOTES": "Brand new Staff member Feb 2026. All docs pending submission."
     },
     # ─── S014 — FULLY COMPLIANT ──────────────────────────────────────────
     {
-        "ID": "S014", "Student Name": "Ingrid Svensson",
+        "ID": "S014", "Staff member Name": "Ingrid Svensson",
         "Program": "Nursing", "Cohort": "Cohort_2026-A",
-        "Start Date": "01/10/2026", "Email": "i.svensson@student.edu",
+        "Start Date": "01/10/2026", "Email": "i.svensson@staff.edu",
         "Phone": "555-210-0014", "Clinical Site": "Memorial Hospital",
         "Advisor": "Dr. Patricia Moore",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(370),
@@ -409,9 +409,9 @@ ROWS = [
     },
     # ─── S015 — NEAR COMPLIANT, ONE ITEM EXPIRING ────────────────────────
     {
-        "ID": "S015", "Student Name": "Jerome Whitfield",
+        "ID": "S015", "Staff member Name": "Jerome Whitfield",
         "Program": "Medical Assisting", "Cohort": "Cohort_2025-A",
-        "Start Date": "01/18/2025", "Email": "j.whitfield@student.edu",
+        "Start Date": "01/18/2025", "Email": "j.whitfield@staff.edu",
         "Phone": "555-210-0015", "Clinical Site": "Sunrise Urgent Care",
         "Advisor": "Dr. James Chen",
         "HIPAA_STATUS": "Complete", "HIPAA_EXP": d(305),
@@ -436,7 +436,7 @@ ROWS = [
 # ── Build CSV rows ──
 def build_row(s):
     return [
-        s["ID"], s["Student Name"], s["Program"], s["Cohort"],
+        s["ID"], s["Staff member Name"], s["Program"], s["Cohort"],
         s["Start Date"], s["Email"], s["Phone"],
         s["Clinical Site"], s["Advisor"],
         # HIPAA
@@ -474,7 +474,7 @@ def build_row(s):
     ]
 
 # ── Write CSV ──
-output_path = r"C:\Users\Dilshan\.gemini\antigravity\scratch\HealthcareComplianceTracker\test_students.csv"
+output_path = r"C:\Users\Dilshan\.gemini\antigravity\scratch\HealthcareComplianceTracker\test_staff.csv"
 
 with open(output_path, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
@@ -482,6 +482,6 @@ with open(output_path, "w", newline="", encoding="utf-8") as f:
     for s in ROWS:
         writer.writerow(build_row(s))
 
-print(f"Done! Written {len(ROWS)} student records to:")
+print(f"Done! Written {len(ROWS)} Staff records to:")
 print(output_path)
 print(f"Columns: {len(HEADERS)}")
