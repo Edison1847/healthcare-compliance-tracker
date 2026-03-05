@@ -1,24 +1,55 @@
-TITLE: Healthcare Compliance Tracker
-CATEGORY: AppScript
+Case Study : Hospital Employee Health Compliance Tracker
+Google Workspace Automation | Google Apps Script
 
-THE PROBLEM
-A freelance healthcare software consultant needed a centralized, automated system to track student compliance requirements (vaccinations, certifications, background checks) across multiple cohorts and clinical sites. The existing process relied on scattered spreadsheets and manual email follow-ups, leading to missed deadlines, non-compliant clinical placements, and significant administrative overhead.
 
-THE SOLUTION
-I architected and developed a fully automated Healthcare Compliance Tracker entirely within the Google Workspace ecosystem, utilizing a multi-agent Google Apps Script pattern. The system automatically structures Google Drive folders for new cohorts, computes real-time compliance scores based on 15 distinct document types with varying renewal rules, and serves a live, interactive web dashboard to visualize Key Performance Indicators (KPIs).
+😐 THE PROBLEM
+Hospital admin needed to track staff compliance (vaccines, certs, checks) across multiple sites.
 
-KEY FEATURES
-- **Automated Drive Architecture Provider:** An agent that scaffolds structured student directories (e.g., `YYYY/Cohort/Student/Categories`) and generates placeholder tracking documents to enforce naming conventions.
-- **Real-Time Analytics Dashboard:** A standalone, responsive Web App (HTML/CSS/JS) bridging to the spreadsheet database, visualizing compliance metrics via animated SVG donut charts, per-item progress bars, and localized program/site breakdowns.
-- **Automated Expiry Alerts:** A scheduled trigger agent that scans records weekly, updating compliance statuses dynamically and dispatching styled HTML email warnings to students with missing or expiring (-30 days) requirements.
+The process relied on scattered spreadsheets and manual emails — causing missed deadlines, non-compliance, and heavy admin workload.
 
-TECHNICAL STACK
-Google Apps Script (JavaScript) | Google Sheets API | Google Drive API | HTML/CSS | Google Workspace Web Apps
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-RESULTS / IMPACT
-- Eliminated 100% of manual folder creation and data structuring for new student onboarding.
-- Reduced the compliance audit lifecycle from hours to seconds via the live Analytics Web App.
-- Proactively prevented clinical placement delays by automating expiry warnings 30 days in advance.
+💖 THE SOLUTION
+Architected a fully automated Healthcare Compliance Tracker in Google Workspace using a multi-agent Apps Script design.
 
-CREDENTIALS
-Dilshan Ganepola — MBBS | MSc Health Informatics | MRCGP | US Patent Holder
+Auto-creates Drive folders for new cohorts, calculates real-time compliance across 15 document types with different renewal rules, and delivers a live interactive KPI dashboard.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔑 KEY FEATURES
+
+📁 Automated Drive Architecture
+Auto-creates structured staff folders (YYYY/Cohort/staff member), adds tracking templates, enforces naming rules.
+
+📊 Real-Time Analytics Dashboard
+Responsive web app showing compliance via animated donut charts, progress bars, and site/program breakdowns.
+
+🔔 Automated Expiry Alerts
+Weekly auto-scan updates status and sends styled email alerts 30 days before expiry.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💻 TECHNICAL STACK
+
+Google Apps Script (JavaScript)  |  Google Sheets API
+Google Drive API  |  HTML / CSS / JavaScript
+Google Workspace Web Apps
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏹 RESULTS / IMPACT
+
+✅ Removed all manual folder setup for staff members
+✅ Cut audit time from hours to seconds with live dashboard
+✅ Avoided placement delays via 30-day automated expiry alerts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+ABOUT THE AUTHOR
+
+Dilshan Ganepola
+MSc Health Informatics | MRCGP | US Patent Holder
+Practicing General Physician & Healthcare AI Consultant
+
