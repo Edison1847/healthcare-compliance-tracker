@@ -1,0 +1,30 @@
+name: 30 Days of Improvements
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs exactly once a day at midnight UTC
+  workflow_dispatch:     # Allows you to trigger it manually from the GitHub UI Actions tab
+
+jobs:
+  improve:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write    # Required to push commits to your repository
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run Improvement Script
+        run: python scripts/apply_improvement.py
+
+      - name: Push Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          # Only commit and push if the script actually modified the files
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: Apply daily automated improvement (Day $(cat scripts/.improvement_day)) [skip ci]" && git push)
