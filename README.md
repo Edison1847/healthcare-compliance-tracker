@@ -9,7 +9,7 @@
 
 ---
 
-## The Problem
+## 1. The Problem\n\n*Effective compliance tracking is critical across healthcare programs.*
 
 Healthcare education programs require staff to maintain 15+ compliance documents — from HIPAA certifications and TB tests to background checks and liability insurance — each with different renewal schedules, expiry windows, and filing categories. Managing this across multiple cohorts, programs, and clinical sites using manual spreadsheets results in:
 
