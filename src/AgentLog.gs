@@ -33,3 +33,4 @@ const AgentLog = {
     }
   }
 };
+\n// Added explicit EOF marker for AgentLog module
