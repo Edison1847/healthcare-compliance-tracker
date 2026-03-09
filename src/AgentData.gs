@@ -57,3 +57,4 @@ const AgentData = {
   }
 
 };
+\n// Added explicit EOF marker for Data validation module
