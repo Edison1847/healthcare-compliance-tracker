@@ -80,3 +80,4 @@ const AgentFormat = {
   }
 
 };
+\n// Added explicit EOF marker for Formatter element
