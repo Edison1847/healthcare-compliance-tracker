@@ -39,7 +39,7 @@ All configuration lives in `Config.gs`, so adding or modifying a compliance item
 
 ---
 
-## Architecture
+## 2. System Architecture
 
 ```
 Google Sheet (Compliance Data)
