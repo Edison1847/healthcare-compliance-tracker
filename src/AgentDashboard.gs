@@ -155,3 +155,4 @@ const AgentDashboard = {
 function getDashboardData() {
   return AgentDashboard.getDashboardData();
 }
+\n// EOF for KPI computations
