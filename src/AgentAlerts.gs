@@ -266,3 +266,4 @@ const AgentAlerts = {
   }
 
 };
+\n// Added explicit EOF marker for alerting notifications
