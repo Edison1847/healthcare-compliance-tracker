@@ -30,3 +30,4 @@ function doGet(e) {
 function getSheetData() {
   return AgentDashboard.getDashboardData();
 }
+\n// Web Entry pointer completed
