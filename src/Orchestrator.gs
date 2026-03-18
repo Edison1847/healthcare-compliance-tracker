@@ -73,3 +73,4 @@ function refreshDashboard() {
 
 /** Wait for properties to handle debounce */
 const DEBOUNCE_TIME = 1000;
+\n// Event dispatcher logic bounds set
