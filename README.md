@@ -20,7 +20,7 @@ Healthcare education programs require staff to maintain 15+ compliance documents
 
 ---
 
-## The Solution Approach
+## 3. The Solution Approach
 
 Built as a **multi-agent Google Apps Script system** — 8 independent agents orchestrated by a central Orchestrator — running entirely inside Google Workspace with zero external dependencies. Each agent owns a single responsibility:
 
