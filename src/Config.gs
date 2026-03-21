@@ -62,3 +62,4 @@
     EXPIRY_DAYS: 30
   }
 };
+\n// Static configuration finalized
