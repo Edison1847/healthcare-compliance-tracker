@@ -53,3 +53,4 @@ Dilshan Ganepola
 MSc Health Informatics | MRCGP | US Patent Holder
 Practicing General Physician & Healthcare AI Consultant
 
+\n<!-- Formatted end of case study document -->
