@@ -231,3 +231,4 @@ All status columns accept exactly these five values (validated dropdown):
 - **Add a compliance item**: Add a new entry to `CONFIG.COMPLIANCE_ITEMS` in `Config.gs` — all agents pick it up automatically
 - **Change alert window**: Edit `CONFIG.TRIGGERS.EXPIRY_DAYS` (default: 30)
 - **Add a student sub-folder**: Edit the `subFolders` object in `AgentDrive.createPlaceholders()`
+\n<!-- Setup guide boundary flag set -->
