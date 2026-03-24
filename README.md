@@ -106,7 +106,7 @@ A true multi-agent runtime would feature agents that run concurrently in separat
 
 ---
 
-## Tech Stack
+## 4. Technology Stack
 
 | Layer | Technology |
 |---|---|
