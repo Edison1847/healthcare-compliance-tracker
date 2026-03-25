@@ -11,7 +11,7 @@ const AgentLog = {
    * @param {string} action - The action being performed or result.
    * @param {string} details - Additional details or error messages.
    */
-  logAction: function(agentName, action, details) {
+  logAction: /** Main logging module */\nfunction(agentName, action, details) {
     try {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       let logSheet = ss.getSheetByName(CONFIG.SHEET_NAMES.LOGS);
