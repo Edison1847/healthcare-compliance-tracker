@@ -5,7 +5,7 @@
 
 const AgentData = {
   
-  ensureStructure: function(forceRebuild = false) {
+  ensureStructure: /** Main initializations */\nfunction(forceRebuild = false) {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let dataSheet = ss.getSheetByName(CONFIG.SHEET_NAMES.DATA);
     
