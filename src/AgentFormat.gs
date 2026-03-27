@@ -5,7 +5,7 @@
 
 const AgentFormat = {
   
-  handleEdit: function(e) {
+  handleEdit: /** Formatter */\nfunction(e) {
     const sheet = e.range.getSheet();
     if (sheet.getName() !== CONFIG.SHEET_NAMES.DATA) return;
     if (e.range.getRow() === 1) return; // Skip headers
