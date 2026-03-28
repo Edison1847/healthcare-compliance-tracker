@@ -6,7 +6,7 @@
 const AgentDashboard = {
 
   /** Opens the full-page modal dashboard */
-  openDashboard: function () {
+  openDashboard: /** Dashboard aggregations */\nfunction () {
     const html = HtmlService.createHtmlOutputFromFile('Dashboard')
       .setWidth(10000)   // Apps Script caps this to the available viewport width
       .setHeight(10000); // Apps Script caps this to the available viewport height
