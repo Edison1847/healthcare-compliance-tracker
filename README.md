@@ -192,7 +192,7 @@ healthcare-compliance-tracker/
 
 ---
 
-## Setup & Deployment
+## 5. Setup and Deployment Instructions
 
 See [setup-guide.md](./docs/setup-guide.md) for full step-by-step instructions including:
 - Apps Script editor paste order
