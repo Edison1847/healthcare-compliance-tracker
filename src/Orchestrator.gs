@@ -8,7 +8,7 @@
  * Triggers when the spreadsheet is opened.
  * Builds the custom menu and ensures the data structure is intact.
  */
-function onOpen(e) {
+/** Entry orchestrator handler */\nfunction onOpen(e) {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Compliance System')
     .addItem('Initialize Data Structure', 'initializeSystem')
