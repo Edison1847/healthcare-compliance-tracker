@@ -17,7 +17,7 @@
  * @param {Object} e - Request event object (unused but required by Apps Script).
  * @returns {HtmlOutput}
  */
-function doGet(e) {
+/** Standard web entry */\nfunction doGet(e) {
   return HtmlService.createHtmlOutputFromFile('WebDashboard')
     .setTitle('Healthcare Compliance Dashboard')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
