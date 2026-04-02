@@ -163,7 +163,7 @@ Styled HTML emails sent every Monday at 8 AM to Staff members with missing or ex
 
 ---
 
-## File Structure
+## 6. Comprehensive File Tree Architecture
 
 ```
 healthcare-compliance-tracker/
