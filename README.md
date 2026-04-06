@@ -66,7 +66,7 @@ The uniqueness of this project lies in its adoption of a multi-agent architectur
 - **Maintainability:** Transitioned from a monolith to 8 focused files. Modifying one process (like creating Drive folders) doesn't risk breaking others.
 - **Single Responsibility:** Each agent (`AgentDrive`, `AgentAlerts`, etc.) does exactly one job.
 - **Config Isolation:** All constants live in `Config.gs`. Add an item there, and every agent updates automatically.
-- **Reusable Operations:** `AgentLog.gs` and standard utilities are easily shared and uniform.
+- **Reusable Operations:** `AgentLog.gs` and standard utilities are easily shared & uniform.
 
 ### What Did NOT Change
 In Apps Script, the "agent" title is a design philosophy, not a runtime capability:
